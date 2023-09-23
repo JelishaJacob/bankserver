@@ -1,0 +1,377 @@
+BackEnd contains - Server & DataBase
+    DataBase - mongodb - store data
+    Server - node js Express - controls DB
+
+Install Express framework
+npm(node package manager) - used to install Express , for that package.json file needed
+
+1.to create package.json
+----------------------
+    inside server folder --> terminal  -->command - npm init
+
+    -->package name :(name)
+    -->version :
+    -->entry point:index.js
+
+2.to install Express
+------------------
+    npm i express
+
+3.create .gitignore file
+------------------------
+
+4.Landing page creation - index.js
+----------------------------------
+    - codes to be done given in index.js
+    -1. import express
+            - type varibleName=require('express')      (ex:const express=require('express'))
+
+    -2.create server using express
+            - type serverVariablName=express()         (ex:const server=express())
+
+    -3.server run
+            - port - can choose 8000/7000/5000/4000/3000
+                 const port=portnumber                 (ex:const port=5000)  
+
+                 serverVariablName.listen(port,()=>{   (ex:server.listen(port,()=>{
+                    console.log(`message`)                      console.log(`server started at port number ${port}`)
+                 })                                         }))
+
+            nodemon - node doesn't have automatic recompilation 
+                    - but nodemon provide automatic recompilation
+                    - to install nodemon
+                            - globally -> npm i -g nodemon       -to run -> nodemon index.js 
+                            - locally  -> npm - npm i nodemon    -to run -> npx nodemon index.js
+
+
+api calls - get, post, put, patch, delete
+_________
+
+ex:
+    bank 
+        -server requests
+            create account      - access more than one data from frontend to server - POST
+            login               - POST 
+            balance check       - access a single data from frontend to server and move datas from DB to FrontEnd - GET
+            money tranfer       - POST
+            account statement   - GET
+            profile view        - GET
+            delete account      - delete
+
+        -response - status code 
+            100 - information passing
+            200 - success
+            300 - redirection
+            400 - client error
+            500 - server error
+            
+api call resolve
+________________
+post
+        serverVariablName.post('/path',(requestVariable,responseVariable)=>{
+            responseVariable.send("message")
+        })                     
+
+
+            ex:server.post('/register',(req,res)=>{
+                    res.send("post method working")
+                })
+
+                server.get('/getex',(req,res)=>{
+                    res.send("get method working")
+                })
+
+    to check run in thunder client
+        select type - ex link - http://localhost:5001/getex
+
+api request may contain JSON typed data
+to create api with data
+to convert json data to js => serverVariablName.use(express.json())         ex:server.use(express.json())
+
+
+mvc (model view controles)
+* * * * * * * * * * * * * 
+
+framework - mvc
+
+
+                                      Routes <----http request
+                                        |
+                                        |
+                                        |
+                             forward request to controllers
+                                        |
+                                        |
+                                        |
+                                        |
+                                        |
+                                        |
+                                       \/ 
+DB <--> Models <-----------------> controllers (logic) ------> http response
+                 read/write data                 
+
+
+                                    View (Templates(FrontEnd))
+
+DB = mongodb 
+    collections - store data - collections similar to table in sql
+    -----------
+        collections contain unstructured data
+
+    every collections must create it's own Models
+
+    model
+    -----
+      - contains structure of collection  - set field and values
+      - to change data inside DB - change model , those changes will reflect in DB
+      - model connects DB and project 
+      - saperate file is created for models
+
+    controllers
+    -----------
+      - contains logic 
+      - ex: logics for logic , signup etc.
+
+    Routes
+    ------
+      - unique paths of all api calls are setting in Routes
+      - FrontEnd send http request to Routes 
+      - Saperate files is needed
+
+    Saperate folders are needed for routes, controllers, models and DB
+    All the files in these foders must be connected to index.js
+
+
+- FrontEnd need logic in controllers but it cannot directly access them from controllers 
+  so FrontEnd send http request to Routes, bcz Routes contains unique paths of each req.
+- Routes forward those req. to it's appropriate logic in controllers
+  example: req. for login is forward to login logic
+- controller work the logics on data in DB in model 
+- then the results will be reflected in DB
+- then the controller send the output as http response
+
+
+DATABASE - MONGO-DB
+* * * * * * * * * *
+
+mongodb atlas
+
+- Store datas as collections
+- unstructured database - store data even if any fields are empty
+    A structured DB must contain values in every field 
+
+
+
+to add datas -
+
+    1. manually add data - click insert document button
+    2. mongodb commands - use mongosh
+    3. using server commands
+
+    Server Commands
+    ---------------
+
+        find data in database collection  
+
+            -  dbName.collectionName.findOne({key:value})
+                true = object (Only one output)     false = null 
+
+            -  dbName.collectionName.find({key:value})
+                true = array of object (more than one output that statisfy the logic)     false = null        
+
+        
+        delete
+
+            -  dbName.collectionName.deleteOne({key:value}) 
+                true = deleteCount 1     false = deleteCount 0
+
+
+        update 
+            - find the data 
+            - edit data 
+            - save
+
+        create
+            - object - entity of class , class - design model 
+            - class = collection 
+
+                to create object - new collectionName({objectkey:values})
+                        ex: new users({acno:1000,uname:"anu"})
+
+        save
+            - .save()
+
+
+server database integration using connection string
+---------------------------------------------------
+
+library - mongoose  -->  npm i mongoose 
+
+import mongoose - const mongoose=require('mongoose')
+
+to connect -
+ mongoose.connect(process.env.baseUrlVariableName,{
+    useUnifiedTopology:true,
+    useNewUrlParser:true
+}).then((=>{
+    console.log("Connected");
+})).catch(()=>{
+    console.log("Not Connected");
+})
+
+while connecting there is chances to cause errors (parser related issues) to resolve that -
+        useUnifiedTopology:true,
+        useNewUrlParser:true
+
+if connected --> .then()
+if not connected --> .catch()
+
+env file 
+--------
+env file - to store environmental variables 
+         - to convert static working of app to dynamic running (localhost running to server/network running)
+         - to run locally 
+         
+environmental variables - variables that contain application configuration during runtime.
+    module - process - to handle env variable 
+                     - run env file 
+                     - provide .env services
+
+dotenv - Library used to import and configure .env file
+       - npm i dotenv 
+connect connection file and index 
+----------------------------------
+
+Front-End Back-End integration
+-----------------------------
+library - cors - cross origin resource sharing 
+
+
+money tranfer
+-------------
+-FrontEnd - recipient acno, 
+          - sender - psw(also check psw), acno(from localstorage)  
+          - amount
+
+    transition details - transaction acno, amount, 
+                         method = credit/debit
+                         date, time
+
+
+
+
+SECURITY
+  * * * * *
+
+  USER AUTHENTICATION
+  * * * * * * * * * * 
+  - jwt (json web token)
+      a token will be generated from server 
+      then the user has to use that token to access details
+      only the user whose token is verified can access the features of the project 
+
+    install jwt - npm i jsonwebtoken
+    import token - const jwt= require('jsonwebtoken)
+
+    create token in login()
+        - const token = json.sign({unique dataName},"ant string to generate secret key")
+        ex:     const token = jwt.sign({ acno }, "secretkey123")
+                return token along with result 
+
+
+   IN FrontEnd
+
+    in login.ts
+        in login() - set token in localstorage
+           localStorage.setItem("token",JSON.stringify(result.token))
+
+    http contains header  and body 
+        header - contains secret data 
+        body -  contains data 
+
+    to include secret data in header 
+    in ds file -
+
+    this headers needs to overloaded 
+    so a  new header with same name need to created as public 
+         ex:
+            const options={
+                headers:new HttpHeaders()
+            }
+
+        then overload it with getToken()
+
+        getToken(){
+            const header=new HttpHeaders()
+
+            if (localStorage.getItem("token")) {
+            const token = JSON.parse(localStorage.getItem("token") || "")
+            options.headaers=headers.append("access_token", token)
+            }
+            return options
+
+        }
+
+        other functions call this header for token 
+        get method - as 2nd property
+        post method - as 3rd property
+
+    then this token will be send to BackEnd with api request
+    then this tokens need to venrify
+
+    only middlewares can control server requests from frontEnd
+
+    Middlewares
+    -----------
+    it's a function with 3 argumants 
+    used in BackEnd to control server requests coming from client side
+
+    1- Application Specific Middlewares
+       ________________________________
+
+           - given to application iself
+           - so all the functions in the application is controlled by middlewares
+
+    2- Router Specific Middlewares
+       ___________________________
+
+           - given to Specific Router
+           - Only that router is controlled by middlewares
+
+    to creater middlewares
+            - create a folder 
+            - then create a file for router middleware
+
+                import jwt
+
+                const jwtMiddlewareName=(req,res,next)=>{
+                     try{
+                            // access token value from headers
+                            const token=req.headers('access_token')
+
+                            // varify token - true/false
+                            jwt.verify(token,"secretkey123")
+
+                            // to exit from middleware
+                            next()
+                        }
+                        catch{
+                            res.status(401).json({
+                                status:false,
+                                message:"please login",
+                                statusCode:401
+                            })
+                        }
+                    }
+
+            export jwtMiddlewareName
+
+                module.exports={jwtMiddlewareName}
+
+            import in router.js       
+                
+
+                
+
+
+
